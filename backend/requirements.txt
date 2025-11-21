@@ -1,0 +1,110 @@
+# Vereins-Kassensystem - Python Dependencies
+
+# ===============================
+# Core Framework
+# ===============================
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# ===============================
+# Database
+# ===============================
+sqlalchemy==2.0.25
+alembic==1.13.1
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+
+# ===============================
+# Authentication & Security
+# ===============================
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+bcrypt==4.1.2
+
+# ===============================
+# Validation & Serialization
+# ===============================
+pydantic==2.5.3
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# ===============================
+# HTTP Client (für SumUp API)
+# ===============================
+httpx==0.26.0
+aiohttp==3.9.1
+
+# ===============================
+# Utilities
+# ===============================
+python-dotenv==1.0.0
+pytz==2023.3
+
+# ===============================
+# PDF Generation
+# ===============================
+reportlab==4.0.9
+pypdf==3.17.4
+
+# ===============================
+# Excel Export
+# ===============================
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+
+# ===============================
+# QR Code Generation
+# ===============================
+qrcode[pil]==7.4.2
+Pillow==10.2.0
+
+# ===============================
+# RFID/NFC (Optional)
+# ===============================
+# pyserial==3.5  # für serielle RFID-Reader
+# evdev==1.6.1   # für USB RFID-Reader unter Linux
+
+# ===============================
+# Logging & Monitoring
+# ===============================
+python-json-logger==2.0.7
+
+# ===============================
+# Testing
+# ===============================
+pytest==7.4.4
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+httpx==0.26.0  # für TestClient
+
+# ===============================
+# Development Tools
+# ===============================
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
+pre-commit==3.6.0
+
+# ===============================
+# CORS
+# ===============================
+# Already included in FastAPI
+
+# ===============================
+# Caching (Optional)
+# ===============================
+# redis==5.0.1
+# aioredis==2.0.1
+
+# ===============================
+# Email (Optional)
+# ===============================
+# aiosmtplib==3.0.1
+# jinja2==3.1.3  # für Email Templates
+
+# ===============================
+# Sentry (Optional Error Tracking)
+# ===============================
+# sentry-sdk==1.39.2
