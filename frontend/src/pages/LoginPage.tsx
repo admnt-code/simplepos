@@ -71,7 +71,18 @@ export const LoginPage: React.FC = () => {
             >
               Anmelden
             </Button>
-          </form>
+         
+           {/* NEU: Password Reset Link */}
+           <div className="text-center mt-4">
+           <button
+             type="button"
+             onClick={() => navigate('/reset-password')}
+             className="text-sm text-primary-600 hover:text-primary-700 underline"
+            >
+           Passwort vergessen?
+           </button>
+         </div> 
+         </form>
         ) : (
           <form onSubmit={handleRFIDLogin} className="space-y-4">
             <Input

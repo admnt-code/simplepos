@@ -10,12 +10,17 @@ import {
   TransactionsPage,
   ProfilePage,
   TopUpPage,
+  PasswordResetPage,
 } from '@/pages'
 
 export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/reset-password',  // NEU
+    element: <PasswordResetPage />,
   },
   {
     path: '/',

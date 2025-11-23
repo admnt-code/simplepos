@@ -1,6 +1,7 @@
 """
 Vereinskasse - Core Configuration (VEREINFACHT)
 """
+import os
 from typing import List, Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -29,6 +30,14 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str = "postgres"
     POSTGRES_PORT: int = 5432
     
+    # Email Settings
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "localhost")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "465"))
+    SMTP_USER: str = os.getenv("SMTP_USER", "")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    SMTP_FROM: str = os.getenv("SMTP_FROM", "noreply@example.com")
+    SMTP_FROM_NAME: str = os.getenv("SMTP_FROM_NAME", "Vereinskasse")
+
     @property
     def DATABASE_URL(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"

@@ -71,4 +71,20 @@ async changePassword(newPassword: string): Promise<void> {
   })
 },
 
+// NEU: Password Reset
+async requestPasswordReset(email: string): Promise<{ message: string }> {
+  return apiClient.post('/api/v1/auth/request-reset', { email })
+},
+
+async verifyPasswordReset(email: string, code: string, newPassword: string): Promise<{ message: string }> {
+  return apiClient.post('/api/v1/auth/verify-reset', {
+    email,
+    code,
+    new_password: newPassword,
+  })
+},
+
+async getUsersList(): Promise<Array<{ id: number; name: string }>> {
+  return apiClient.get('/api/v1/users/list')
+},
 }
