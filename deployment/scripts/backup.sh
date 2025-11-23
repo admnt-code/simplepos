@@ -5,7 +5,7 @@
 
 set -e
 
-BACKUP_DIR="/app/backups"
+BACKUP_DIR="./backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RETENTION_DAYS=60
 
@@ -16,8 +16,8 @@ echo "==================================="
 # PostgreSQL Backup
 echo "Sichere PostgreSQL Datenbank..."
 docker exec vereinskasse-db pg_dump \
-    -U ${POSTGRES_USER} \
-    -d ${POSTGRES_DB} \
+    -U vereinskasse \
+    -d vereinskasse_db \
     -F c \
     -f /tmp/backup_${TIMESTAMP}.dump
 

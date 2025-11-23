@@ -65,4 +65,10 @@ export const authService = {
   isAuthenticated(): boolean {
     return !!this.getAccessToken()
   },
+async changePassword(newPassword: string): Promise<void> {
+  return apiClient.put('/api/v1/auth/change-password', {
+    new_password: newPassword,
+  })
+},
+
 }

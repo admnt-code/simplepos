@@ -212,10 +212,10 @@ export interface UserFormData {
 }
 
 export interface TransactionFormData {
-  user_id: number
-  transaction_type: TransactionType
+  user_id?: number
+  transaction_type: string
   amount: number
-  payment_method?: PaymentMethod
+  payment_method?: string
   description?: string
 }
 

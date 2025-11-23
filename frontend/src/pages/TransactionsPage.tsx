@@ -1,11 +1,12 @@
 import React from 'react'
-import { useUserTransactions } from '@/hooks'
-import { Card, Badge, LoadingSpinner } from '@/components/ui'
+import { useUserTransactions, useAuth } from '@/hooks'
+import { Card, LoadingSpinner } from '@/components/ui'
 import { formatCurrency, formatDateTime } from '@/lib/utils'
+import { ShoppingBag } from 'lucide-react'
 
 export const TransactionsPage: React.FC = () => {
   const { user } = useAuth()
-  const { data: transactions, isLoading } = useUserTransactions(user?.id)  
+  const { data: transactions, isLoading } = useUserTransactions(user?.id)
 
   if (isLoading) {
     return (
@@ -18,65 +19,48 @@ export const TransactionsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Transaktionen</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Meine Käufe</h1>
         <p className="text-gray-600 mt-2">
-          Übersicht über alle Transaktionen
+          Übersicht über alle deine Einkäufe
         </p>
       </div>
 
-      <Card padding={false}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Datum
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Typ
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Betrag
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {transactions?.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {formatDateTime(transaction.created_at)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge variant="info" size="sm">
-                      {transaction.transaction_type}
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-gray-900 font-medium">
-                    {formatCurrency(transaction.amount)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge
-                      variant={
-                        transaction.status === 'successful'
-                          ? 'success'
-                          : transaction.status === 'failed'
-                          ? 'danger'
-                          : 'warning'
-                      }
-                      size="sm"
-                    >
-                      {transaction.status}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      {/* Transactions List */}
+      <div className="space-y-3">
+        {transactions && transactions.length > 0 ? (
+          transactions.map((transaction) => (
+            <Card key={transaction.id} hover>
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-3">
+                  <div className="bg-primary-50 p-2 rounded-lg">
+                    <ShoppingBag className="h-5 w-5 text-primary-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {transaction.description || 'Einkauf'}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {formatDateTime(transaction.created_at)}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-semibold text-danger-600">
+                    -{formatCurrency(transaction.amount)}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ))
+        ) : (
+          <Card>
+            <div className="text-center py-12">
+              <ShoppingBag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">Noch keine Einkäufe</p>
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   )
 }

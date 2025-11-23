@@ -1,15 +1,16 @@
 import React from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { ShoppingCart, Trash2, CreditCard } from 'lucide-react'
 import { useCart, useAuth } from '@/hooks'
 import { Card, Button, Badge } from '@/components/ui'
 import { transactionsService } from '@/lib/api'
 import { formatCurrency } from '@/lib/utils'
-import { TransactionType, PaymentMethod } from '@/types';
 import toast from 'react-hot-toast'
 
 export const CartSummary: React.FC = () => {
   const { items, total, itemCount, clearCart, removeItem, updateQuantity } = useCart()
   const { user, updateUser } = useAuth()
+  const queryClient = useQueryClient()
 
   if (items.length === 0) {
     return (
@@ -93,37 +94,39 @@ export const CartSummary: React.FC = () => {
           </div>
         </div>
       )}
-        {/* Checkout Button */}
-<Button
-  variant="success"
-  fullWidth
-  icon={CreditCard}
-  disabled={!canAfford}
-  onClick={async () => {
-    if (!user) return
 
-    try {
-      // Erstelle EINE Transaktion für den gesamten Warenkorb
-      await transactionsService.create({
-        transaction_type: TransactionType.PURCHASE,
-        amount: total,
-        payment_method: 'balance',
-        user_id: user.id, // Required field
-        description: `Warenkorb: ${items.map(i => `${i.quantity}x ${i.product.name}`).join(', ')}`,
-      })
+      {/* Checkout Button */}
+      <Button
+        variant="success"
+        fullWidth
+        icon={CreditCard}
+        disabled={!canAfford}
+        onClick={async () => {
+          if (!user) return
 
-      toast.success('Kauf erfolgreich!')
-      clearCart()
+          try {
+            // Erstelle EINE Transaktion für den gesamten Warenkorb
+            await transactionsService.create({
+              transaction_type: 'purchase' as any,
+              amount: total,
+              payment_method: 'balance' as any,
+              description: `Warenkorb: ${items.map(i => `${i.quantity}x ${i.product.name}`).join(', ')}`,
+            })
 
-      // Update user balance (reload von Server wäre besser)
-      const updatedUser = { ...user, balance: user.balance - total }
-      updateUser(updatedUser)
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Kauf fehlgeschlagen')
-    }
-  }}
->
+            toast.success('Kauf erfolgreich!')
+            clearCart()
 
+            // Update user balance (reload von Server wäre besser)
+            const updatedUser = { ...user, balance: user.balance - total }
+            updateUser(updatedUser)
+                      
+              // Invalidiere Transaktions-Cache (lädt automatisch neu)
+           queryClient.invalidateQueries({ queryKey: ['transactions'] })  // NEU!
+           } catch (error: any) {
+            toast.error(error.response?.data?.detail || 'Kauf fehlgeschlagen')
+          }
+        }}
+      >
         {canAfford ? 'Jetzt bezahlen' : 'Nicht genug Guthaben'}
       </Button>
 

@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks'
 import { Card, Input, Button } from '@/components/ui'
 import { Save, Key, CreditCard } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { usersService } from '@/lib/api'
+import { usersService, authService } from '@/lib/api'
 
 export const ProfilePage: React.FC = () => {
   const { user, updateUser } = useAuth()
@@ -15,7 +15,7 @@ export const ProfilePage: React.FC = () => {
   const handleRFIDUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
-    
+
     setLoading(true)
     try {
       await usersService.update(user.id, { rfid_token: rfidToken })
@@ -28,36 +28,36 @@ export const ProfilePage: React.FC = () => {
       setLoading(false)
     }
   }
-  
+
   const handlePasswordChange = async (e: React.FormEvent) => {
-  e.preventDefault()
-  
-  if (newPassword !== confirmPassword) {
-    toast.error('Passwörter stimmen nicht überein')
-    return
-  }
+    e.preventDefault()
 
-  if (newPassword.length < 6) {
-    toast.error('Passwort muss mindestens 6 Zeichen lang sein')
-    return
-  }
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwörter stimmen nicht überein')
+      return
+    }
 
-  setLoading(true)
-  try {
-    // Backend-Call (muss noch implementiert werden)
-    // await usersService.changePassword({ new_password: newPassword })
-    toast.success('Passwort erfolgreich geändert')
-    setNewPassword('')
-    setConfirmPassword('')
-  } catch (error) {
-    toast.error('Fehler beim Ändern des Passworts')
-  } finally {
-    setLoading(false)
+    if (newPassword.length < 6) {
+      toast.error('Passwort muss mindestens 6 Zeichen lang sein')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await authService.changePassword(newPassword)
+      toast.success('Passwort erfolgreich geändert')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (error: any) {
+      toast.error(error.response?.data?.detail || 'Fehler beim Ändern des Passworts')
+    } finally {
+      setLoading(false)
+    }
   }
-} 
 
   return (
     <div className="space-y-6 max-w-2xl">
+
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Mein Profil</h1>
         <p className="text-gray-600 mt-2">
@@ -102,21 +102,21 @@ export const ProfilePage: React.FC = () => {
           <Key className="h-6 w-6 mr-2 text-primary-600" />
           Passwort ändern
         </h2>
+
         <form onSubmit={handlePasswordChange} className="space-y-4">
           <Input
             label="Neues Passwort"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            required
           />
           <Input
             label="Passwort bestätigen"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            required
           />
+
           <Button
             type="submit"
             variant="primary"
@@ -127,6 +127,7 @@ export const ProfilePage: React.FC = () => {
           </Button>
         </form>
       </Card>
+
     </div>
   )
 }
