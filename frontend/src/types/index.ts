@@ -33,6 +33,7 @@ export enum ProductCategory {
   DRINKS = 'drinks',  // lowercase!
   SNACKS = 'snacks',
   FOOD = 'food',
+  OTHER = 'other',
 }
 
 export interface Product {

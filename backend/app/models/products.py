@@ -17,6 +17,7 @@ class ProductCategory(str, enum.Enum):
     DRINKS = "drinks"
     SNACKS = "snacks"
     FOOD = "food"
+    OTHER = "other"
 
 
 class Product(Base):

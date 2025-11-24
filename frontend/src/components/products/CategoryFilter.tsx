@@ -12,6 +12,7 @@ const categories = [
   { value: ProductCategory.DRINKS, label: 'Getränke' },
   { value: ProductCategory.SNACKS, label: 'Snacks' },
   { value: ProductCategory.FOOD, label: 'Essen' },
+  { value: ProductCategory.OTHER, label: 'Anderes' },
 ]
 
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({

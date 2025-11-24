@@ -133,6 +133,7 @@ export const AdminProductsPage: React.FC = () => {
     [ProductCategory.DRINKS]: 'Getränke',
     [ProductCategory.SNACKS]: 'Snacks',
     [ProductCategory.FOOD]: 'Essen',
+    [ProductCategory.OTHER]: 'Anderes',
    }
 
   return (
@@ -275,6 +276,7 @@ export const AdminProductsPage: React.FC = () => {
                  <option value={ProductCategory.DRINKS}>Getränke</option>
                  <option value={ProductCategory.SNACKS}>Snacks</option>
                  <option value={ProductCategory.FOOD}>Essen</option>
+                 <option value={ProductCategory.OTHER}>Anderes</option>
                 </Select>                
 
                 <div className="grid grid-cols-2 gap-4">
