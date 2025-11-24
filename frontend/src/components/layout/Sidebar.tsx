@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
   { name: 'Dashboard', path: '/dashboard', icon: Home },
   { name: 'Verzehr buchen', path: '/pos', icon: ShoppingBag },
   { name: 'Guthaben aufladen', path: '/topup', icon: Wallet },
-  { name: 'Produkte', path: '/products', icon: Package, adminOnly: true },
+  { name: 'Produktverwaltung', path: '/admin/products', icon: Package, adminOnly: true },  // Geändert!
   { name: 'Transaktionen', path: '/transactions', icon: Receipt },
   { name: 'Benutzer', path: '/users', icon: Users, adminOnly: true },
   { name: 'Einstellungen', path: '/settings', icon: Settings, adminOnly: true },

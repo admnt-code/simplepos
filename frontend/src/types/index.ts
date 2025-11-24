@@ -29,12 +29,10 @@ export interface AuthTokens {
   token_type: string
 }
 
-// Product Types
 export enum ProductCategory {
-  DRINKS = 'DRINKS',
-  SNACKS = 'SNACKS',
-  FOOD = 'FOOD',
-  OTHER = 'OTHER',
+  DRINKS = 'drinks',  // lowercase!
+  SNACKS = 'snacks',
+  FOOD = 'food',
 }
 
 export interface Product {

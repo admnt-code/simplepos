@@ -13,7 +13,9 @@ class ProductBase(BaseModel):
     variant: Optional[str] = Field(None, max_length=50)
     member_price: float = Field(..., gt=0)
     guest_price: float = Field(..., gt=0)
-    tax_rate: float = Field(..., ge=0, le=1)
+    tax_rate: float = Field(default=0.19, ge=0, le=1)
+    stock_quantity: Optional[int] = Field(None, ge=0)
+    track_stock: bool = False
     is_available: bool = True
     sort_order: int = 0
 
@@ -30,6 +32,8 @@ class ProductUpdate(BaseModel):
     member_price: Optional[float] = Field(None, gt=0)
     guest_price: Optional[float] = Field(None, gt=0)
     tax_rate: Optional[float] = Field(None, ge=0, le=1)
+    stock_quantity: Optional[int] = Field(None, ge=0)
+    track_stock: Optional[bool] = None
     is_available: Optional[bool] = None
     sort_order: Optional[int] = None
 

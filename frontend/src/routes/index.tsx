@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
 import { Layout } from '@/components/layout'
@@ -6,7 +5,7 @@ import {
   LoginPage,
   DashboardPage,
   POSPage,
-  ProductsPage,
+  AdminProductsPage,
   TransactionsPage,
   ProfilePage,
   TopUpPage,
@@ -19,7 +18,7 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    path: '/reset-password',  // NEU
+    path: '/reset-password',
     element: <PasswordResetPage />,
   },
   {
@@ -43,12 +42,8 @@ export const router = createBrowserRouter([
         element: <POSPage />,
       },
       {
-        path: 'products',
-        element: <ProductsPage />,
-      },
-      {
         path: 'profile',
-       element: <ProfilePage />,
+        element: <ProfilePage />,
       },
       {
         path: 'transactions',
@@ -58,26 +53,15 @@ export const router = createBrowserRouter([
         path: 'topup',
         element: <TopUpPage />,
       },
+      // Admin Routes
       {
-        path: 'users',
+        path: 'admin/products',
         element: (
           <ProtectedRoute requireAdmin>
-            <div>Users Page (Admin Only)</div>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'settings',
-        element: (
-          <ProtectedRoute requireAdmin>
-            <div>Settings Page (Admin Only)</div>
+            <AdminProductsPage />
           </ProtectedRoute>
         ),
       },
     ],
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" replace />,
   },
 ])

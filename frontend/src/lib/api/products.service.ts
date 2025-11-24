@@ -5,8 +5,10 @@ export const productsService = {
   async getAll(category?: ProductCategory, availableOnly = true): Promise<Product[]> {
     const params = new URLSearchParams()
     if (category) params.append('category', category)
-    if (availableOnly) params.append('available_only', 'true')
-    return apiClient.get<Product[]>(`/api/v1/products/?${params.toString()}`)
+    params.append('available_only', availableOnly.toString())
+    
+    const query = params.toString()
+    return apiClient.get<Product[]>(`/api/v1/products/${query ? '?' + query : ''}`)
   },
 
   async getById(id: number): Promise<Product> {
@@ -23,9 +25,5 @@ export const productsService = {
 
   async delete(id: number): Promise<void> {
     return apiClient.delete(`/api/v1/products/${id}`)
-  },
-
-  async toggleAvailability(id: number): Promise<Product> {
-    return apiClient.patch<Product>(`/api/v1/products/${id}/toggle-availability`)
   },
 }
