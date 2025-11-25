@@ -9,8 +9,9 @@ from datetime import datetime, timedelta
 from typing import Optional, Union
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer
+from fastapi.security.http import HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -24,6 +25,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # OAuth2 Scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+
+# Optional OAuth2 Scheme (für öffentliche Endpoints die optional auth haben)
+from fastapi.security import HTTPBearer
+oauth2_scheme_optional = HTTPBearer(auto_error=False)
 
 
 class SecurityService:
@@ -278,6 +283,49 @@ async def get_current_admin_user(
             detail="Keine Admin-Berechtigung"
         )
     return current_user
+
+async def get_current_user_optional(
+    db: AsyncSession = Depends(get_db),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(oauth2_scheme_optional)
+) -> Optional[User]:
+    """
+    Dependency für optionalen User (kein Error wenn kein Token)
+    
+    Args:
+        db: Database Session
+        credentials: Optional HTTP Bearer Token
+    
+    Returns:
+        Optional[User]: User wenn Token vorhanden und gültig, sonst None
+    """
+    if not credentials:
+        return None
+    
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(
+            token, 
+            settings.SECRET_KEY, 
+            algorithms=[settings.ALGORITHM]
+        )
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            return None
+            
+        token_data = TokenData(user_id=int(user_id))
+    except (JWTError, ValueError):
+        return None
+    
+    from sqlalchemy import select
+    result = await db.execute(
+        select(User).where(User.id == token_data.user_id)
+    )
+    user = result.scalar_one_or_none()
+    
+    if user is None or not user.is_active:
+        return None
+        
+    return user
 
 
 def create_token_pair(user_id: int) -> dict:

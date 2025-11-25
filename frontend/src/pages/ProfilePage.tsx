@@ -4,15 +4,16 @@ import { Card, Input, Button } from '@/components/ui'
 import { Save, Key, CreditCard } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usersService, authService } from '@/lib/api'
+import { FEATURES } from '@/config/features'
 
 export const ProfilePage: React.FC = () => {
-  const { user, updateUser } = useAuth()
   const [rfidToken, setRfidToken] = useState('')
+  const { user, updateUser } = useAuth()
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleRFIDUpdate = async (e: React.FormEvent) => {
+  const handleRFIDUpdate = FEATURES.RFID_LOGIN ? async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
 
@@ -27,7 +28,7 @@ export const ProfilePage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  } : undefined
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,11 +62,13 @@ export const ProfilePage: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Mein Profil</h1>
         <p className="text-gray-600 mt-2">
-          Verwalte deine RFID-Karte und Passwort
+       <p className="text-gray-600 mt-2">
+  {FEATURES.RFID_LOGIN ? 'Verwalte deine RFID-Karte und Passwort' : 'Verwalte dein Passwort'}</p>
         </p>
       </div>
 
       {/* RFID Verknüpfung */}
+      {FEATURES.RFID_LOGIN && (
       <Card>
         <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
           <CreditCard className="h-6 w-6 mr-2 text-primary-600" />
@@ -95,7 +98,7 @@ export const ProfilePage: React.FC = () => {
           </Button>
         </form>
       </Card>
-
+      )}
       {/* Passwort ändern */}
       <Card>
         <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">

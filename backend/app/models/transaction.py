@@ -50,6 +50,7 @@ class Transaction(Base):
     transfer_to_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     description = Column(String, nullable=True)
     created_by_admin_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    guest_id = Column(Integer, ForeignKey("guests.id"), nullable=True)  # NEU
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     completed_at = Column(DateTime, nullable=True)
 
@@ -57,3 +58,4 @@ class Transaction(Base):
     user = relationship("User", foreign_keys=[user_id], back_populates="transactions")
     transfer_to_user = relationship("User", foreign_keys=[transfer_to_user_id])
     created_by_admin = relationship("User", foreign_keys=[created_by_admin_id])
+    guest = relationship("Guest", back_populates="transactions")  # NEU

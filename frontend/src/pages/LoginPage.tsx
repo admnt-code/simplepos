@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CreditCard, LogIn } from 'lucide-react'
 import { useAuth } from '@/hooks'
 import { Button, Input, Card } from '@/components/ui'
+import { FEATURES } from '@/config/features'
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate()
@@ -105,7 +106,7 @@ export const LoginPage: React.FC = () => {
             </Button>
           </form>
         )}
-
+        {FEATURES.RFID_LOGIN && (
         <div className="mt-6 text-center">
           <button
             type="button"
@@ -115,7 +116,20 @@ export const LoginPage: React.FC = () => {
             {rfidMode ? '← Zurück zur normalen Anmeldung' : 'Mit RFID anmelden →'}
           </button>
         </div>
-      </Card>
+        )}
+        {/* Gästeverwaltung Link */}
+        <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+         <p className="text-sm text-gray-600 mb-2">Für Gäste ohne Login</p>
+         <a
+           href="/guest-management"
+           target="_blank"
+           rel="noopener noreferrer"
+           className="text-sm font-medium text-primary-600 hover:text-primary-700 underline"
+          >
+            Zur Gästeverwaltung →
+  </a>
+    </div>
+     </Card>
     </div>
   )
 }

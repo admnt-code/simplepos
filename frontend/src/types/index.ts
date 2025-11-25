@@ -119,17 +119,6 @@ export interface Purchase {
   created_at: string
 }
 
-// Guest Types
-export interface Guest {
-  id: number
-  name: string
-  guest_number: string
-  is_active: boolean
-  is_archived: boolean
-  created_at: string
-  archived_at?: string
-}
-
 // API Response Types
 export interface ApiResponse<T> {
   data?: T
@@ -236,4 +225,34 @@ export interface TransactionFilters {
 export interface SortConfig {
   field: string
   direction: 'asc' | 'desc'
+}
+
+// Guest Types
+export interface Guest {
+  id: number
+  name: string
+  created_at: string
+  closed_at?: string
+  total_amount: number
+  is_active: boolean
+  tab_items: GuestTabItem[]
+}
+
+export interface GuestTabItem {
+  id: number
+  product_id: number
+  product_name: string
+  quantity: number
+  price_per_item: number
+  total_amount: number
+  created_at: string
+  paid: boolean
+}
+
+export interface GuestFormData {
+  name: string
+}
+
+export interface GuestCloseTabRequest {
+  payment_method: 'cash' | 'cloud_api'
 }

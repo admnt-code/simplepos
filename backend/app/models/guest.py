@@ -1,29 +1,33 @@
 """
-Guest Model - Einfache Version OHNE Relationships
+Guest Model - für Gäste-Verwaltung
 """
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy.orm import relationship
 from datetime import datetime
-from sqlalchemy import Column, DateTime, Integer, String, Boolean
-from app.db.session import Base
+from app.db.base import Base
 
 
 class Guest(Base):
-    """Guest Model - Vereinfacht"""
+    """
+    Guest Model - Gäste mit offenen Tabs
+    """
     __tablename__ = "guests"
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
-    guest_number = Column(String(20), unique=True, nullable=False, index=True)
-    is_active = Column(Boolean, default=True, nullable=False)
-    is_archived = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    archived_at = Column(DateTime, nullable=True)
+    closed_at = Column(DateTime, nullable=True)
+    total_amount = Column(Float, default=0.0, nullable=False)
+    
+    # Relationships
+    tab_items = relationship("GuestTab", back_populates="guest", cascade="all, delete-orphan")
+    transactions = relationship("Transaction", back_populates="guest")
+    
+    @property
+    def is_active(self) -> bool:
+        """Gast ist aktiv wenn closed_at NULL ist"""
+        return self.closed_at is None
     
     def __repr__(self):
-        return f"<Guest {self.name} ({self.guest_number})>"
-    
-    @classmethod
-    def generate_guest_number(cls) -> str:
-        from datetime import datetime
-        date_part = datetime.now().strftime("%Y%m%d")
-        import random
-        return f"G-{date_part}-{random.randint(100, 999)}"
+        status = "aktiv" if self.is_active else "geschlossen"
+        return f"<Guest {self.name} ({status})>"

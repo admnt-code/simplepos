@@ -10,6 +10,9 @@ import {
   ProfilePage,
   TopUpPage,
   PasswordResetPage,
+  GuestManagementPage,
+  GuestDetailPage,
+  GuestPOSPage,
 } from '@/pages'
 
 export const router = createBrowserRouter([
@@ -21,6 +24,20 @@ export const router = createBrowserRouter([
     path: '/reset-password',
     element: <PasswordResetPage />,
   },
+        // Guest Management Routes
+      {
+        path: 'guest-management',
+        element: <GuestManagementPage />,
+      },
+      {
+        path: 'guests/:id',
+        element: <GuestDetailPage />,
+      },
+      {
+        path: 'guest-pos/:id',
+        element: <GuestPOSPage />,
+      },   
+
   {
     path: '/',
     element: (
