@@ -87,6 +87,7 @@ export interface Transaction {
   id: number
   transaction_reference: string
   user_id?: number
+  guest_id?: number  // HINZUFÜGEN!
   transaction_type: TransactionType
   status: TransactionStatus
   amount: number

@@ -75,7 +75,7 @@ const todayTotal = todaysPurchases.reduce((sum, t) => sum + t.amount, 0)
         title: 'Produkte',
         description: 'Sortiment verwalten',
         icon: Package,
-        path: '/products',
+        path: '/admin/products',
         color: 'warning',
       },
       {
