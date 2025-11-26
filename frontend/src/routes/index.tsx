@@ -13,6 +13,7 @@ import {
   GuestManagementPage,
   GuestDetailPage,
   GuestPOSPage,
+  UsersPage,
 } from '@/pages'
 
 export const router = createBrowserRouter([
@@ -76,6 +77,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute requireAdmin>
             <AdminProductsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/users',  // NEU
+        element: (
+          <ProtectedRoute requireAdmin>
+            <UsersPage />
           </ProtectedRoute>
         ),
       },

@@ -35,13 +35,16 @@ async def create_transaction(
     # Validate balance for purchases
     if transaction_data.payment_method == "balance":
         if current_user.balance < transaction_data.amount:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Insufficient balance"
-            )
+            # Prüfe ob mit Dispo möglich
+            new_balance = current_user.balance - transaction_data.amount
+            if new_balance < -15.0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Insufficient balance. Maximum overdraft is -15.00€"
+                )
 
         # Deduct from balance
-        current_user.balance -= transaction_data.amount
+        current_user.balance -= transaction_data.amount    
     
     # Create transaction
     transaction = Transaction(

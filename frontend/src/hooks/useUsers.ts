@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { usersService } from '@/lib/api'
-import { UserFormData } from '@/types'
+import { UserCreateRequest, UserUpdateRequest } from '@/types'
 import toast from 'react-hot-toast'
 
 export const useUsers = () => {
@@ -22,7 +22,7 @@ export const useCreateUser = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: UserFormData) => usersService.create(data),
+    mutationFn: (data: UserCreateRequest) => usersService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('Benutzer erstellt')
@@ -37,7 +37,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<UserFormData> }) =>
+    mutationFn: ({ id, data }: { id: number; data: UserUpdateRequest }) =>
       usersService.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })

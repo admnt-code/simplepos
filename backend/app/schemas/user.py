@@ -19,6 +19,7 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
+    username: Optional[str] = Field(None, min_length=3, max_length=50)
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -26,6 +27,13 @@ class UserUpdate(BaseModel):
 
 class UserChangePassword(BaseModel):
     old_password: str
+    new_password: str = Field(..., min_length=6)
+
+class UserBalanceAdjustment(BaseModel):
+    amount: float = Field(..., description="Betrag (positiv = Aufladung, negativ = Abzug)")
+    description: str = Field(..., min_length=3, max_length=200, description="Grund für die Anpassung")
+
+class UserPasswordReset(BaseModel):
     new_password: str = Field(..., min_length=6)
 
 

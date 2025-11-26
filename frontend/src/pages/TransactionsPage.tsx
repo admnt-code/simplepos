@@ -214,17 +214,23 @@ export const TransactionsPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-
+                
                 <div className="text-right">
                   <p
                     className={`text-lg font-semibold ${
-                      transaction.transaction_type === 'top_up'
+                      transaction.transaction_type === 'top_up' || 
+                      (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0) ||
+                      (transaction.transaction_type === 'transfer' && transaction.amount > 0)
                         ? 'text-success-600'
                         : 'text-danger-600'
                     }`}
                   >
-                    {transaction.transaction_type === 'top_up' ? '+' : '-'}
-                    {formatCurrency(transaction.amount)}
+                    {(transaction.transaction_type === 'top_up' || 
+                      (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0) ||
+                      (transaction.transaction_type === 'transfer' && transaction.amount > 0))
+                      ? '+'
+                      : '-'}
+                    {formatCurrency(Math.abs(transaction.amount))}
                   </p>
                   <span
                     className={`text-xs px-2 py-0.5 rounded ${
@@ -238,7 +244,7 @@ export const TransactionsPage: React.FC = () => {
                     {transaction.status}
                   </span>
                 </div>
-              </div>
+            </div>
             </Card>
           ))
         ) : (
@@ -248,8 +254,8 @@ export const TransactionsPage: React.FC = () => {
               <p className="text-gray-500">
                 {showAllTransactions ? 'Keine Transaktionen gefunden' : 'Noch keine Einkäufe'}
               </p>
-            </div>
-          </Card>
+           </div>
+         </Card>
         )}
       </div>
     </div>

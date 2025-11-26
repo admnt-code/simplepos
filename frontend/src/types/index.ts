@@ -200,6 +200,24 @@ export interface UserFormData {
   rfid_token?: string
 }
 
+// User Management - Additional Types
+export interface UserCreateRequest {
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  password: string
+  is_admin: boolean
+}
+
+export interface UserUpdateRequest {
+  username?: string
+  first_name?: string
+  last_name?: string
+  email?: string
+  rfid_token?: string
+}
+
 export interface TransactionFormData {
   user_id?: number
   transaction_type: string
@@ -256,4 +274,43 @@ export interface GuestFormData {
 
 export interface GuestCloseTabRequest {
   payment_method: 'cash' | 'cloud_api'
+}
+
+// User Management Types (Admin)
+export interface User {
+  id: number
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  balance: number
+  is_active: boolean
+  is_admin: boolean
+  rfid_token?: string
+  created_at: string
+  last_login?: string
+}
+
+export interface UserCreateData {
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  password: string
+  is_admin: boolean
+}
+
+export interface UserUpdateData {
+  first_name?: string
+  last_name?: string
+  email?: string
+}
+
+export interface UserBalanceAdjustment {
+  amount: number
+  description: string
+}
+
+export interface UserPasswordReset {
+  new_password: string
 }

@@ -27,7 +27,7 @@ const navItems: NavItem[] = [
   { name: 'Guthaben aufladen', path: '/topup', icon: Wallet },
   { name: 'Produktverwaltung', path: '/admin/products', icon: Package, adminOnly: true },  // Geändert!
   { name: 'Transaktionen', path: '/transactions', icon: Receipt },
-  { name: 'Benutzer', path: '/users', icon: Users, adminOnly: true },
+  { name: 'Benutzer', path: '/admin/users', icon: Users, adminOnly: true },
   { name: 'Einstellungen', path: '/settings', icon: Settings, adminOnly: true },
   { name: 'Mein Profil', path: '/profile', icon: UserCog },
 ]

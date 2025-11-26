@@ -1,5 +1,5 @@
 import { apiClient } from './client'
-import { User, UserFormData } from '@/types'
+import { User, UserCreateRequest, UserUpdateRequest, UserBalanceAdjustment, UserPasswordReset } from '@/types'
 
 export const usersService = {
   async getAll(): Promise<User[]> {
@@ -10,11 +10,11 @@ export const usersService = {
     return apiClient.get<User>(`/api/v1/users/${id}`)
   },
 
-  async create(data: UserFormData): Promise<User> {
+  async create(data: UserCreateRequest): Promise<User> {
     return apiClient.post<User>('/api/v1/users/', data)
   },
 
-  async update(id: number, data: Partial<UserFormData>): Promise<User> {
+  async update(id: number, data: UserUpdateRequest): Promise<User> {
     return apiClient.put<User>(`/api/v1/users/${id}`, data)
   },
 
@@ -22,16 +22,11 @@ export const usersService = {
     return apiClient.delete(`/api/v1/users/${id}`)
   },
 
-  async updateBalance(id: number, amount: number, description?: string): Promise<User> {
-    return apiClient.post<User>(`/api/v1/users/${id}/adjust-balance`, {
-      amount,
-      description,
-    })
+  async adjustBalance(id: number, data: UserBalanceAdjustment): Promise<User> {
+    return apiClient.post<User>(`/api/v1/users/${id}/adjust-balance`, data)
   },
 
-  async linkRFID(id: number, rfidToken: string): Promise<User> {
-    return apiClient.post<User>(`/api/v1/users/${id}/link-rfid`, {
-      rfid_token: rfidToken,
-    })
+  async resetPassword(id: number, data: UserPasswordReset): Promise<{ message: string }> {
+    return apiClient.post<{ message: string }>(`/api/v1/users/${id}/reset-password`, data)
   },
 }
