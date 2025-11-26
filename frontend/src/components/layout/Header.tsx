@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 z-10 h-16">
       <div className="flex items-center justify-between px-4 h-full">
-	<h1 className="text-xl font-bold text-gray-900">Verzehrsystem BC Colours Düsseldorf e.V.</h1>
+        <h1 className="text-xl font-bold text-gray-900">Verzehrsystem BC Colours Düsseldorf e.V.</h1>
         {/* Left: Menu & Title */}
         <div className="flex items-center space-x-4">
           <button
@@ -46,7 +46,7 @@ export const Header: React.FC = () => {
                 <p className="text-sm font-medium text-gray-900">
                   {user.first_name} {user.last_name}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className={`text-xs ${(user.balance ?? 0) < 0 ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
                   Guthaben: {formatCurrency(user.balance)}
                 </p>
               </div>

@@ -39,8 +39,9 @@ export const DashboardPage: React.FC = () => {
       title: 'Mein Guthaben',
       value: formatCurrency(user?.balance || 0),
       icon: TrendingUp,
-      iconColor: (user?.balance ?? 0) < 0 ? 'text-danger-600' : 'text-success-600',
-      bgColor: (user?.balance ?? 0) < 0 ? 'bg-danger-50' : 'bg-success-50',
+      iconColor: (user?.balance ?? 0) < 0 ? 'text-red-600' : 'text-success-600',
+      bgColor: (user?.balance ?? 0) < 0 ? 'bg-red-50' : 'bg-success-50',
+      valueColor: (user?.balance ?? 0) < 0 ? 'text-red-600' : 'text-gray-900',
     },
     {
       title: 'Umsatz heute',
@@ -48,6 +49,7 @@ export const DashboardPage: React.FC = () => {
       icon: ShoppingBag,
       iconColor: 'text-primary-600',
       bgColor: 'bg-primary-50',
+      valueColor: 'text-gray-900',
     },
   ]
 
@@ -105,7 +107,7 @@ export const DashboardPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className={`text-2xl font-bold ${stat.valueColor}`}>{stat.value}</p>
               </div>
               <div className={`${stat.bgColor} p-3 rounded-lg`}>
                 <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
@@ -170,13 +172,13 @@ export const DashboardPage: React.FC = () => {
               >
                 <div className="flex items-center space-x-3">
                   <div className={`p-2 rounded-lg ${
-                    transaction.transaction_type === 'top_up' || 
+                    transaction.transaction_type === 'top_up' ||
                     (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0)
                       ? 'bg-success-50'
                       : 'bg-primary-50'
                   }`}>
                     <Receipt className={`h-4 w-4 ${
-                      transaction.transaction_type === 'top_up' || 
+                      transaction.transaction_type === 'top_up' ||
                       (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0)
                         ? 'text-success-600'
                         : 'text-primary-600'
@@ -184,10 +186,10 @@ export const DashboardPage: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      {transaction.description || 
-                        (transaction.transaction_type === 'purchase' ? 'Einkauf' : 
+                      {transaction.description ||
+                        (transaction.transaction_type === 'purchase' ? 'Einkauf' :
                          transaction.transaction_type === 'top_up' ? 'Aufladung' :
-                         transaction.transaction_type === 'admin_adjustment' ? 'Admin-Anpassung' : 
+                         transaction.transaction_type === 'admin_adjustment' ? 'Admin-Anpassung' :
                          'Transfer')}
                     </p>
                     <p className="text-xs text-gray-500">
@@ -196,12 +198,12 @@ export const DashboardPage: React.FC = () => {
                   </div>
                 </div>
                 <p className={`text-sm font-semibold ${
-                  transaction.transaction_type === 'top_up' || 
+                  transaction.transaction_type === 'top_up' ||
                   (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0)
                     ? 'text-success-600'
                     : 'text-danger-600'
                 }`}>
-                  {(transaction.transaction_type === 'top_up' || 
+                  {(transaction.transaction_type === 'top_up' ||
                     (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0))
                     ? '+'
                     : '-'}

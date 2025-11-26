@@ -21,7 +21,9 @@ export const CartSummary: React.FC = () => {
     )
   }
 
-  const canAfford = user && user.balance >= total
+   // Dispo-Limit: User darf bis -15€ ins Minus gehen
+   const DISPO_LIMIT = -15
+   const canAfford = user && (user.balance - total) >= DISPO_LIMIT  
 
   return (
     <Card>
@@ -84,7 +86,9 @@ export const CartSummary: React.FC = () => {
         <div className="bg-primary-50 rounded-lg p-3 mb-4">
           <div className="flex items-center justify-between mb-1">
             <span className="text-sm text-gray-700">Aktuelles Guthaben</span>
-            <span className="font-semibold">{formatCurrency(user.balance)}</span>
+            <span className={`font-semibold ${(user.balance ?? 0) < 0 ? 'text-red-600' : 'text-gray-900'}`}>
+              {formatCurrency(user.balance)}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-700">Nach Kauf</span>
@@ -119,10 +123,11 @@ export const CartSummary: React.FC = () => {
             // Update user balance (reload von Server wäre besser)
             const updatedUser = { ...user, balance: user.balance - total }
             updateUser(updatedUser)
-                      
-              // Invalidiere Transaktions-Cache (lädt automatisch neu)
-           queryClient.invalidateQueries({ queryKey: ['transactions'] })  // NEU!
-           } catch (error: any) {
+
+            // Invalidiere Cache für automatische Aktualisierung überall
+            await queryClient.invalidateQueries({ queryKey: ['user'] })
+            await queryClient.invalidateQueries({ queryKey: ['transactions'] })
+          } catch (error: any) {
             toast.error(error.response?.data?.detail || 'Kauf fehlgeschlagen')
           }
         }}

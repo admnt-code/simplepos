@@ -5,28 +5,35 @@ import { Wallet, CreditCard } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { transactionsService } from '@/lib/api'
 import { formatCurrency } from '@/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const TopUpPage: React.FC = () => {
   const { user, updateUser } = useAuth()
   const [amount, setAmount] = useState('')
   const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
 
   const quickAmounts = [5, 10, 20, 50]
 
   const handleTopUp = async (topUpAmount: number) => {
     if (!user) return
-    
+
     setLoading(true)
     try {
       const response = await transactionsService.topUp({
         amount: topUpAmount,
         payment_method: 'cloud_api',
       })
-      
+
       toast.success(`${formatCurrency(topUpAmount)} erfolgreich aufgeladen!`)
-      
+
       // Update user balance
       updateUser({ ...user, balance: user.balance + topUpAmount })
+      
+      // Invalidate queries to refresh all balance displays
+      await queryClient.invalidateQueries({ queryKey: ['user'] })
+      await queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      
       setAmount('')
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Fehler beim Aufladen')
@@ -48,7 +55,7 @@ export const TopUpPage: React.FC = () => {
       <Card>
         <div className="text-center">
           <p className="text-sm text-gray-600 mb-2">Aktuelles Guthaben</p>
-          <p className="text-4xl font-bold text-primary-600">
+          <p className={`text-4xl font-bold ${(user?.balance ?? 0) < 0 ? 'text-red-600' : 'text-primary-600'}`}>
             {formatCurrency(user?.balance || 0)}
           </p>
         </div>
