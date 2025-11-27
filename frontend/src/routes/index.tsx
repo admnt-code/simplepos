@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
-import { Layout } from '@/components/layout'
+import { Layout, GuestLayout, AuthLayout } from '@/components/layout'  // AuthLayout hinzufügen
 import {
   LoginPage,
   DashboardPage,
@@ -17,15 +17,27 @@ import {
 } from '@/pages'
 
 export const router = createBrowserRouter([
+  // Auth Routes mit AuthLayout
   {
-    path: '/login',
-    element: <LoginPage />,
+    path: '/',
+    element: <AuthLayout />,
+    children: [
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'reset-password',
+        element: <PasswordResetPage />,
+      },
+    ],
   },
+  
+  // Guest Management Routes mit GuestLayout
   {
-    path: '/reset-password',
-    element: <PasswordResetPage />,
-  },
-        // Guest Management Routes
+    path: '/',
+    element: <GuestLayout />,
+    children: [
       {
         path: 'guest-management',
         element: <GuestManagementPage />,
@@ -37,8 +49,11 @@ export const router = createBrowserRouter([
       {
         path: 'guest-pos/:id',
         element: <GuestPOSPage />,
-      },   
+      },
+    ],
+  },
 
+  // Protected Routes mit normalem Layout
   {
     path: '/',
     element: (
@@ -81,7 +96,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'admin/users',  // NEU
+        path: 'admin/users',
         element: (
           <ProtectedRoute requireAdmin>
             <UsersPage />
