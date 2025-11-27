@@ -16,16 +16,13 @@ export const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    e.stopPropagation() // Verhindere Event-Bubbling
+    e.stopPropagation()
     
     try {
       await login(username, password)
       navigate('/dashboard')
     } catch (error: any) {
-      // Username bleibt erhalten, nur Passwort wird geleert
       setPassword('')
-      
-      // Zeige spezifische Fehlermeldung
       const errorMessage = error?.response?.data?.detail || error?.message || 'Anmeldung fehlgeschlagen'
       
       if (errorMessage.toLowerCase().includes('credential') || 
@@ -51,102 +48,158 @@ export const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            BC Colours Kiosk
-          </h1>
-          <p className="text-gray-600">
-            Melde dich an, um fortzufahren
-          </p>
-        </div>
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Dark Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
+      
+      {/* Animated Mesh Gradient - BC Colours Style */}
+      <div className="absolute inset-0">
+        {/* Top Left - Rot */}
+        <div 
+          className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse"
+          style={{ backgroundColor: '#E31E24' }}
+        />
+        
+        {/* Bottom Right - Gold */}
+        <div 
+          className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full blur-3xl opacity-15 animate-pulse"
+          style={{ 
+            backgroundColor: '#D4AF37',
+            animationDelay: '1s'
+          }}
+        />
+        
+        {/* Center - Rot Glow */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-10"
+          style={{ backgroundColor: '#E31E24' }}
+        />
+      </div>
 
-        {!rfidMode ? (
-          <form onSubmit={handleLogin} className="space-y-4">
-            <Input
-              label="Benutzername"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Dein Benutzername"
-              required
-            />
-            <Input
-              label="Passwort"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Dein Passwort"
-              required
-            />
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              icon={LogIn}
-              loading={isLoading}
-            >
-              Anmelden
-            </Button>
+      {/* Subtle Grid Pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}
+      />
 
-           {/* NEU: Password Reset Link */}
-           <div className="text-center mt-4">
-           <button
-             type="button"
-             onClick={() => navigate('/reset-password')}
-             className="text-sm text-primary-600 hover:text-primary-700 underline"
+      {/* Glass Card with Glow */}
+      <div className="relative z-10 w-full max-w-md">
+        {/* Glow Effect behind Card - Rot */}
+        <div 
+          className="absolute inset-0 rounded-2xl blur-xl opacity-30"
+          style={{ backgroundColor: '#E31E24' }}
+        />
+        
+        {/* Main Card */}
+        <Card className="relative backdrop-blur-2xl bg-white/95 shadow-2xl border border-white/20">
+          {/* Header with Icon */}
+          <div className="text-center mb-8">
+            <div 
+              className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 shadow-lg"
+              style={{ backgroundColor: '#E31E24' }}
             >
-           Passwort vergessen?
-           </button>
-         </div>
-         </form>
-        ) : (
-          <form onSubmit={handleRFIDLogin} className="space-y-4">
-            <Input
-              label="RFID-Karte scannen"
-              type="text"
-              value={rfidToken}
-              onChange={(e) => setRfidToken(e.target.value)}
-              placeholder="Karte an Leser halten..."
-              autoFocus
-              required
-            />
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              icon={CreditCard}
-              loading={isLoading}
+              <LogIn className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              BC Colours Kiosk
+            </h1>
+            <p className="text-gray-600">
+              Melde dich an, um fortzufahren
+            </p>
+          </div>
+
+          {!rfidMode ? (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <Input
+                label="Benutzername"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Dein Benutzername"
+                required
+              />
+              <Input
+                label="Passwort"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Dein Passwort"
+                required
+              />
+              <Button
+                type="submit"
+                variant="primary"
+                fullWidth
+                icon={LogIn}
+                loading={isLoading}
+              >
+                Anmelden
+              </Button>
+
+              <div className="text-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => navigate('/reset-password')}
+                  className="text-sm text-primary-600 hover:text-primary-700 underline"
+                >
+                  Passwort vergessen?
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleRFIDLogin} className="space-y-4">
+              <Input
+                label="RFID-Karte scannen"
+                type="text"
+                value={rfidToken}
+                onChange={(e) => setRfidToken(e.target.value)}
+                placeholder="Karte an Leser halten..."
+                autoFocus
+                required
+              />
+              <Button
+                type="submit"
+                variant="primary"
+                fullWidth
+                icon={CreditCard}
+                loading={isLoading}
+              >
+                Mit RFID anmelden
+              </Button>
+            </form>
+          )}
+
+          {FEATURES.RFID_LOGIN && (
+            <div className="mt-6 text-center">
+              <button
+                type="button"
+                onClick={() => setRfidMode(!rfidMode)}
+                className="text-sm text-primary-600 hover:text-primary-700"
+              >
+                {rfidMode ? '← Zurück zur normalen Anmeldung' : 'Mit RFID anmelden →'}
+              </button>
+            </div>
+          )}
+
+          <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+            <p className="text-sm text-gray-600 mb-2">Für Gäste ohne Login</p>
+            <a
+              href="/guest-management"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-primary-600 hover:text-primary-700 underline"
             >
-              Mit RFID anmelden
-            </Button>
-          </form>
-        )}
-        {FEATURES.RFID_LOGIN && (
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={() => setRfidMode(!rfidMode)}
-            className="text-sm text-primary-600 hover:text-primary-700"
-          >
-            {rfidMode ? '← Zurück zur normalen Anmeldung' : 'Mit RFID anmelden →'}
-          </button>
-        </div>
-        )}
-        {/* Gästeverwaltung Link */}
-        <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-         <p className="text-sm text-gray-600 mb-2">Für Gäste ohne Login</p>
-         <a
-           href="/guest-management"
-           target="_blank"
-           rel="noopener noreferrer"
-           className="text-sm font-medium text-primary-600 hover:text-primary-700 underline"
-          >
-            Zur Gästeverwaltung →
-  </a>
-    </div>
-     </Card>
+              Zur Gästeverwaltung →
+            </a>
+          </div>
+        </Card>
+      </div>
     </div>
   )
 }
