@@ -12,9 +12,11 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.units import cm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
+from sqlalchemy.orm import selectinload
 from app.db.session import get_db
 from app.models.transaction import Transaction
 from app.models.user import User
+from app.models.guest import Guest
 from app.schemas.transaction import TransactionCreate, TransactionResponse, TopUpRequest
 from app.models.transaction import TransactionStatus, PaymentMethod
 from app.core.security import get_current_user
@@ -44,11 +46,11 @@ async def create_transaction(
                 )
 
         # Deduct from balance
-        current_user.balance -= transaction_data.amount    
-    
+        current_user.balance -= transaction_data.amount
+
     # Create transaction
     transaction = Transaction(
-    transaction_reference=f"TXN-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{current_user.id}",  # NEU!
+    transaction_reference=f"TXN-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{current_user.id}",
     user_id=current_user.id,
     transaction_type=transaction_data.transaction_type,
     amount=transaction_data.amount,
@@ -81,7 +83,7 @@ async def top_up_balance(
 
     # Create transaction
     transaction = Transaction(
-    transaction_reference=f"TOP-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{current_user.id}",  # NEU!
+    transaction_reference=f"TOP-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{current_user.id}",
     user_id=current_user.id,
     transaction_type="top_up",
     amount=top_up_data.amount,
@@ -125,13 +127,14 @@ async def get_my_transactions(
 async def get_all_transactions(
     skip: int = 0,
     limit: int = 100,
-    user_type: str = 'all',  # NEU: 'all', 'members', 'guests'
+    user_type: str = 'all',
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
     Get all transactions (Admin only)
     Filter by user_type: 'all', 'members', 'guests'
+    Returns transactions with user/guest names
     """
     if not current_user.is_admin:
         raise HTTPException(
@@ -140,19 +143,47 @@ async def get_all_transactions(
         )
 
     # Build query with filter
-    query = select(Transaction)
-    
+    query = select(Transaction).options(
+        selectinload(Transaction.user),
+        selectinload(Transaction.guest)
+    )
+
     if user_type == 'members':
         query = query.where(Transaction.user_id.is_not(None))
     elif user_type == 'guests':
         query = query.where(Transaction.guest_id.is_not(None))
     # 'all' = no filter
-    
+
     query = query.order_by(Transaction.created_at.desc()).offset(skip).limit(limit)
-    
+
     result = await db.execute(query)
     transactions = result.scalars().all()
-    return transactions
+    
+    # Manuell die Namen hinzufügen
+    response_data = []
+    for txn in transactions:
+        txn_dict = {
+            "id": txn.id,
+            "transaction_reference": txn.transaction_reference,
+            "user_id": txn.user_id,
+            "guest_id": txn.guest_id,
+            "transaction_type": txn.transaction_type,
+            "status": txn.status,
+            "amount": txn.amount,
+            "balance_before": txn.balance_before,
+            "balance_after": txn.balance_after,
+            "payment_method": txn.payment_method,
+            "description": txn.description,
+            "created_at": txn.created_at,
+            "completed_at": txn.completed_at,
+            # Namen hinzufügen
+            "user_first_name": txn.user.first_name if txn.user else None,
+            "user_last_name": txn.user.last_name if txn.user else None,
+            "guest_name": txn.guest.name if txn.guest else None,
+        }
+        response_data.append(txn_dict)
+    
+    return response_data
 
 @router.get("/{transaction_id}", response_model=TransactionResponse)
 async def get_transaction(
@@ -198,16 +229,19 @@ async def export_transactions_pdf(
             detail="Not enough permissions"
         )
 
-    # Get transactions with filter
-    query = select(Transaction)
-    
+    # Get transactions with filter and load relationships
+    query = select(Transaction).options(
+        selectinload(Transaction.user),
+        selectinload(Transaction.guest)
+    )
+
     if user_type == 'members':
         query = query.where(Transaction.user_id.is_not(None))
     elif user_type == 'guests':
         query = query.where(Transaction.guest_id.is_not(None))
-    
+
     query = query.order_by(Transaction.created_at.desc())
-    
+
     result = await db.execute(query)
     transactions = result.scalars().all()
 
@@ -215,26 +249,32 @@ async def export_transactions_pdf(
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
-    
+
     styles = getSampleStyleSheet()
-    
+
     # Title
     title_text = f"Transaktionen - {user_type.upper()}"
     title = Paragraph(title_text, styles['Title'])
     elements.append(title)
     elements.append(Spacer(1, 0.5*cm))
-    
+
     # Date
     date_text = f"Erstellt am: {datetime.utcnow().strftime('%d.%m.%Y %H:%M')}"
     elements.append(Paragraph(date_text, styles['Normal']))
     elements.append(Spacer(1, 1*cm))
-    
+
     # Table data
     data = [['Datum', 'Typ', 'Benutzer', 'Betrag', 'Status', 'Zahlungsart']]
-    
+
     for txn in transactions:
-        user_info = f"Mitglied {txn.user_id}" if txn.user_id else f"Gast {txn.guest_id}" if txn.guest_id else "System"
-        
+        # Zeige Namen statt IDs
+        if txn.user:
+            user_info = f"{txn.user.first_name} {txn.user.last_name}"
+        elif txn.guest:
+            user_info = f"Gast: {txn.guest.name}"
+        else:
+            user_info = "System"
+
         data.append([
             txn.created_at.strftime('%d.%m.%Y %H:%M'),
             txn.transaction_type,
@@ -243,7 +283,7 @@ async def export_transactions_pdf(
             txn.status,
             txn.payment_method or '-'
         ])
-    
+
     # Create table
     table = Table(data, colWidths=[4*cm, 3*cm, 3*cm, 2.5*cm, 2.5*cm, 3*cm])
     table.setStyle(TableStyle([
@@ -257,13 +297,13 @@ async def export_transactions_pdf(
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('FONTSIZE', (0, 1), (-1, -1), 10),
     ]))
-    
+
     elements.append(table)
-    
+
     # Build PDF
     doc.build(elements)
     buffer.seek(0)
-    
+
     return Response(
         content=buffer.getvalue(),
         media_type="application/pdf",

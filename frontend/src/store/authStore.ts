@@ -17,9 +17,9 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true })
           const tokens = await authService.login({ username, password })
-          
+
           const user = await authService.getCurrentUser()
-          
+
           set({
             user,
             accessToken: tokens.access_token,
@@ -27,11 +27,12 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           })
-          
+
           toast.success(`Willkommen zurück, ${user.first_name}!`)
         } catch (error) {
           set({ isLoading: false })
-          toast.error(handleApiError(error))
+          // ENTFERNT: toast.error(handleApiError(error))
+          // Der Error wird zur LoginPage weitergegeben, die ihn behandelt
           throw error
         }
       },
@@ -40,9 +41,9 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true })
           const tokens = await authService.loginRFID({ rfid_token: rfidToken })
-          
+
           const user = await authService.getCurrentUser()
-          
+
           set({
             user,
             accessToken: tokens.access_token,
@@ -50,11 +51,12 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           })
-          
+
           toast.success(`Willkommen, ${user.first_name}!`)
         } catch (error) {
           set({ isLoading: false })
-          toast.error('RFID-Login fehlgeschlagen')
+          // ENTFERNT: toast.error('RFID-Login fehlgeschlagen')
+          // Der Error wird zur LoginPage weitergegeben
           throw error
         }
       },

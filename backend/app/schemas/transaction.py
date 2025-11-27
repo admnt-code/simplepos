@@ -19,6 +19,7 @@ class TransactionResponse(BaseModel):
     id: int
     transaction_reference: str
     user_id: Optional[int]
+    guest_id: Optional[int]  # NEU
     transaction_type: TransactionType
     status: TransactionStatus
     amount: float
@@ -28,6 +29,11 @@ class TransactionResponse(BaseModel):
     description: Optional[str]
     created_at: datetime
     completed_at: Optional[datetime]
+    
+    # NEU: User- und Guest-Namen für Frontend
+    user_first_name: Optional[str] = None
+    user_last_name: Optional[str] = None
+    guest_name: Optional[str] = None
 
     class Config:
         from_attributes = True

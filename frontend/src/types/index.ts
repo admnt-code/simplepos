@@ -101,6 +101,10 @@ export interface Transaction {
   created_by_admin_id?: number
   created_at: string
   completed_at?: string
+  // NEU: User- und Guest-Namen vom Backend
+  user_first_name?: string
+  user_last_name?: string
+  guest_name?: string
 }
 
 // Purchase Types

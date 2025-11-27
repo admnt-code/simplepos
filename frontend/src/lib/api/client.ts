@@ -39,7 +39,16 @@ class ApiClient {
           _retry?: boolean
         }
 
-        // Handle 401 - Unauthorized
+        // WICHTIG: Ignoriere 401 bei Login/RFID-Login Requests
+        const isLoginRequest = originalRequest.url?.includes('/auth/login') || 
+                              originalRequest.url?.includes('/auth/rfid-login')
+        
+        if (isLoginRequest) {
+          // Bei Login-Fehlern einfach den Error durchlassen, keine Redirect!
+          return Promise.reject(error)
+        }
+
+        // Handle 401 - Unauthorized (nur bei authentifizierten Requests)
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true
 
@@ -66,7 +75,11 @@ class ApiClient {
             // Refresh failed - logout
             localStorage.removeItem('access_token')
             localStorage.removeItem('refresh_token')
-            window.location.href = '/login'
+            
+            // Nur redirecten wenn wir nicht schon auf der Login-Seite sind
+            if (!window.location.pathname.includes('/login')) {
+              window.location.href = '/login'
+            }
             return Promise.reject(refreshError)
           }
         }

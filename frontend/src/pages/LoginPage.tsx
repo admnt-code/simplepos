@@ -4,6 +4,7 @@ import { CreditCard, LogIn } from 'lucide-react'
 import { useAuth } from '@/hooks'
 import { Button, Input, Card } from '@/components/ui'
 import { FEATURES } from '@/config/features'
+import toast from 'react-hot-toast'
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate()
@@ -15,11 +16,26 @@ export const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation() // Verhindere Event-Bubbling
+    
     try {
       await login(username, password)
       navigate('/dashboard')
-    } catch (error) {
-      // Error is handled by toast in store
+    } catch (error: any) {
+      // Username bleibt erhalten, nur Passwort wird geleert
+      setPassword('')
+      
+      // Zeige spezifische Fehlermeldung
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Anmeldung fehlgeschlagen'
+      
+      if (errorMessage.toLowerCase().includes('credential') || 
+          errorMessage.toLowerCase().includes('password') ||
+          errorMessage.toLowerCase().includes('incorrect') ||
+          errorMessage.toLowerCase().includes('invalid')) {
+        toast.error('Falscher Benutzername oder Passwort. Bitte erneut versuchen.')
+      } else {
+        toast.error(errorMessage)
+      }
     }
   }
 
@@ -30,6 +46,7 @@ export const LoginPage: React.FC = () => {
       navigate('/dashboard')
     } catch (error) {
       setRfidToken('')
+      toast.error('RFID-Karte nicht erkannt. Bitte erneut scannen.')
     }
   }
 
@@ -72,7 +89,7 @@ export const LoginPage: React.FC = () => {
             >
               Anmelden
             </Button>
-         
+
            {/* NEU: Password Reset Link */}
            <div className="text-center mt-4">
            <button
@@ -82,7 +99,7 @@ export const LoginPage: React.FC = () => {
             >
            Passwort vergessen?
            </button>
-         </div> 
+         </div>
          </form>
         ) : (
           <form onSubmit={handleRFIDLogin} className="space-y-4">

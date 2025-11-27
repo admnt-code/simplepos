@@ -199,10 +199,10 @@ export const TransactionsPage: React.FC = () => {
                     {/* Show user/guest info for admin */}
                     {showAllTransactions && (
                       <p className="text-sm text-gray-600 mt-1">
-                        {transaction.user_id ? (
-                          <>Mitglied ID: {transaction.user_id}</>
-                        ) : transaction.guest_id ? (
-                          <>Gast ID: {transaction.guest_id}</>
+                        {transaction.user_first_name && transaction.user_last_name ? (
+                          <>{transaction.user_first_name} {transaction.user_last_name}</>
+                        ) : transaction.guest_name ? (
+                          <>Gast: {transaction.guest_name}</>
                         ) : (
                           'System'
                         )}
