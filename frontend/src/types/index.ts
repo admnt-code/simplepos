@@ -304,3 +304,12 @@ export interface UserBalanceAdjustment {
 export interface UserPasswordReset {
   new_password: string
 }
+
+// Service Health Status Types
+// Überwacht externe Services (Internet + SumUp), NICHT das System selbst
+export interface HealthStatus {
+  internet: 'ok' | 'error'
+  internet_message: string
+  sumup: 'ok' | 'mock' | 'error'
+  sumup_message: string
+}

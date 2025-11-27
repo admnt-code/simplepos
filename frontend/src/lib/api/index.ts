@@ -3,4 +3,5 @@ export { productsService } from './products.service'
 export { transactionsService } from './transactions.service'
 export { guestsService } from './guests.service'
 export { usersService } from './users.service'
-export { apiClient, handleApiError } from './client'  // NEU
+export { healthService } from './health.service'  // NEU
+export { apiClient, handleApiError } from './client'

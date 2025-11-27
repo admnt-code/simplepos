@@ -3,6 +3,7 @@ import { useAuth, useCart } from '@/hooks'
 import { useUIStore } from '@/store'
 import { Badge } from '@/components/ui'
 import { formatCurrency } from '@/lib/utils'
+import { StatusIndicator } from '@/components/StatusIndicator'
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth()
@@ -12,7 +13,7 @@ export const Header: React.FC = () => {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 z-10 h-16">
       <div className="flex items-center justify-between px-4 h-full">
-        <h1 className="text-xl font-bold text-gray-900">Verzehrsystem BC Colours Düsseldorf e.V.</h1>
+        <h1 className="text-xl font-bold text-gray-900">BC Colours Düsseldorf e.V.</h1>
         {/* Left: Menu & Title */}
         <div className="flex items-center space-x-4">
           <button
@@ -38,6 +39,9 @@ export const Header: React.FC = () => {
               </Badge>
             )}
           </div>
+
+          {/* Status LEDs */}
+          <StatusIndicator />
 
           {/* User Info */}
           {user && (
