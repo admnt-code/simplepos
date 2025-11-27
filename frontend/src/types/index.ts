@@ -63,7 +63,7 @@ export interface CartItem {
 // Transaction Types
 export enum TransactionType {
   TOP_UP = 'top_up',
-  TRANSFER = 'transfer',
+  // TRANSFER = 'transfer',  // ENTFERNT - Feature nicht verwendet
   PURCHASE = 'purchase',
   ADMIN_ADJUSTMENT = 'admin_adjustment',
 }
@@ -80,14 +80,14 @@ export enum PaymentMethod {
   SUMUP_CLOUD_API = 'cloud_api',
   SUMUP_PAYMENT_LINK = 'payment_link',
   BALANCE = 'balance',
-  TRANSFER = 'transfer',
+  // TRANSFER = 'transfer',  // ENTFERNT - Feature nicht verwendet
 }
 
 export interface Transaction {
   id: number
   transaction_reference: string
   user_id?: number
-  guest_id?: number  // HINZUFÜGEN!
+  guest_id?: number
   transaction_type: TransactionType
   status: TransactionStatus
   amount: number
@@ -96,7 +96,7 @@ export interface Transaction {
   payment_method?: PaymentMethod
   sumup_checkout_id?: string
   sumup_transaction_code?: string
-  transfer_to_user_id?: number
+  // transfer_to_user_id?: number  // ENTFERNT - Feature nicht verwendet
   description?: string
   created_by_admin_id?: number
   created_at: string
@@ -277,20 +277,6 @@ export interface GuestCloseTabRequest {
 }
 
 // User Management Types (Admin)
-export interface User {
-  id: number
-  username: string
-  email: string
-  first_name: string
-  last_name: string
-  balance: number
-  is_active: boolean
-  is_admin: boolean
-  rfid_token?: string
-  created_at: string
-  last_login?: string
-}
-
 export interface UserCreateData {
   username: string
   email: string

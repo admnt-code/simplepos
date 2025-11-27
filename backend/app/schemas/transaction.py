@@ -12,7 +12,8 @@ class TransactionCreate(BaseModel):
     transaction_type: str  # String statt ENUM
     payment_method: str = Field(default="balance")  # String statt ENUM
     description: Optional[str] = None
-    transfer_to_user_id: Optional[int] = None
+    # transfer_to_user_id: Optional[int] = None  # ENTFERNT - Feature nicht verwendet
+
 
 class TransactionResponse(BaseModel):
     id: int

@@ -1,10 +1,8 @@
 """
 Vereinskasse - System Settings Model
 Datei: backend/app/models/settings.py
-
 System-Einstellungen (SumUp Mode, etc.)
 """
-
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 from app.db.session import Base
@@ -26,7 +24,7 @@ class SystemSettings(Base):
     
     # Feature Flags
     guest_sumup_enabled = Column(Boolean, default=True)
-    member_transfer_enabled = Column(Boolean, default=True)
+    # member_transfer_enabled = Column(Boolean, default=True)  # ENTFERNT - Feature nicht verwendet
     
     # Locale
     default_language = Column(String(5), default="de")

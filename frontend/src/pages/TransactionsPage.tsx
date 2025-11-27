@@ -67,8 +67,8 @@ export const TransactionsPage: React.FC = () => {
     const labels: Record<string, string> = {
       purchase: 'Kauf',
       top_up: 'Aufladung',
-      transfer: 'Transfer',
       admin_adjustment: 'Admin-Anpassung',
+      // transfer: 'Transfer',  // ENTFERNT - Feature nicht verwendet
     }
     return labels[type] || type
   }
@@ -80,7 +80,7 @@ export const TransactionsPage: React.FC = () => {
       cloud_api: 'SumUp',
       payment_link: 'SumUp Link',
       balance: 'Guthaben',
-      transfer: 'Transfer',
+      // transfer: 'Transfer',  // ENTFERNT - Feature nicht verwendet
     }
     return labels[method] || method
   }
@@ -214,20 +214,18 @@ export const TransactionsPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <p
                     className={`text-lg font-semibold ${
-                      transaction.transaction_type === 'top_up' || 
-                      (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0) ||
-                      (transaction.transaction_type === 'transfer' && transaction.amount > 0)
+                      transaction.transaction_type === 'top_up' ||
+                      (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0)
                         ? 'text-success-600'
                         : 'text-danger-600'
                     }`}
                   >
-                    {(transaction.transaction_type === 'top_up' || 
-                      (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0) ||
-                      (transaction.transaction_type === 'transfer' && transaction.amount > 0))
+                    {(transaction.transaction_type === 'top_up' ||
+                      (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0))
                       ? '+'
                       : '-'}
                     {formatCurrency(Math.abs(transaction.amount))}
