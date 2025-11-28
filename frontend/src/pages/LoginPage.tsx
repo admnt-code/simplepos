@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks'
 import { Button, Input, Card } from '@/components/ui'
 import { FEATURES } from '@/config/features'
 import toast from 'react-hot-toast'
+import bcColoursLogo from '@/assets/bc-colours-logo.png'  // NEU
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate()
@@ -98,13 +99,14 @@ export const LoginPage: React.FC = () => {
         
         {/* Main Card */}
         <Card className="relative backdrop-blur-2xl bg-white/95 shadow-2xl border border-white/20">
-          {/* Header with Icon */}
+          {/* Header with Logo */}
           <div className="text-center mb-8">
-            <div 
-              className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 shadow-lg"
-              style={{ backgroundColor: '#E31E24' }}
-            >
-              <LogIn className="h-8 w-8 text-white" />
+            <div className="inline-block mb-4">
+              <img 
+                src={bcColoursLogo}
+                alt="BC Colours Logo" 
+                className="w-32 h-32 object-contain drop-shadow-xl"
+              />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               BC Colours Kiosk
