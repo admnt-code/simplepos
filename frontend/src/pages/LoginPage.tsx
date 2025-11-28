@@ -57,15 +57,19 @@ export const LoginPage: React.FC = () => {
       <div className="absolute inset-0">
         {/* Top Left - Rot */}
         <div 
-          className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse"
-          style={{ backgroundColor: '#E31E24' }}
+          className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-20"
+          style={{ 
+            backgroundColor: '#E31E24',
+            animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}
         />
         
         {/* Bottom Right - Gold */}
         <div 
-          className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full blur-3xl opacity-15 animate-pulse"
+          className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full blur-3xl opacity-15"
           style={{ 
             backgroundColor: '#D4AF37',
+            animation: 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             animationDelay: '1s'
           }}
         />
@@ -73,7 +77,10 @@ export const LoginPage: React.FC = () => {
         {/* Center - Rot Glow */}
         <div 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-10"
-          style={{ backgroundColor: '#E31E24' }}
+          style={{ 
+            backgroundColor: '#E31E24',
+            animation: 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}
         />
       </div>
 
