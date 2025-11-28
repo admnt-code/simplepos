@@ -1,12 +1,12 @@
 """
 Auth Endpoints
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 import random  # NEU
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from app.db.session import get_db
 from app.services.auth_service import AuthService
 from app.core.security import create_token_pair, get_current_user, SecurityService
@@ -197,3 +197,117 @@ async def verify_password_reset(
     await db.commit()
     
     return {"message": "Passwort erfolgreich geändert"}
+
+# ============================================
+# SHORT-LIVED TOKEN SYSTEM FÜR USER SEARCH
+# ============================================
+
+import secrets
+from datetime import datetime, timedelta
+from typing import Optional
+
+class SearchTokenManager:
+    """Verwaltet short-lived tokens für User-Search"""
+    def __init__(self, validity_minutes: int = 5):
+        self.validity_minutes = validity_minutes
+        self.current_token: Optional[str] = None
+        self.token_expires_at: Optional[datetime] = None
+        self._generate_token()
+    
+    def _generate_token(self):
+        """Generiert neuen Token"""
+        self.current_token = secrets.token_urlsafe(32)
+        self.token_expires_at = datetime.now() + timedelta(minutes=self.validity_minutes)
+    
+    def get_token(self) -> str:
+        """Gibt aktuellen Token zurück, rotiert wenn abgelaufen"""
+        if datetime.now() >= self.token_expires_at:
+            self._generate_token()
+        return self.current_token
+    
+    def validate_token(self, token: str) -> bool:
+        """Prüft ob Token gültig ist"""
+        if datetime.now() >= self.token_expires_at:
+            self._generate_token()
+            return False
+        return token == self.current_token
+
+# Globale Token-Manager Instanz
+search_token_manager = SearchTokenManager(validity_minutes=5)
+
+
+@router.get("/search-token")
+async def get_search_token():
+    """
+    Public Endpoint: Gibt aktuellen Search-Token zurück
+    Token ist 5 Minuten gültig und rotiert automatisch
+    """
+    return {
+        "token": search_token_manager.get_token(),
+        "expires_in_seconds": 300
+    }
+
+
+class UserSearchResult(BaseModel):
+    """Public user info for login search"""
+    id: int
+    username: str
+    first_name: str
+    last_name: str
+    
+    class Config:
+        from_attributes = True
+
+
+@router.get("/users/search", response_model=list[UserSearchResult])
+async def search_users_for_login(
+    request: Request,
+    q: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Gesicherter User-Search für Login-Page
+    Benötigt Token aus /search-token im X-Search-Token Header
+    """
+    # Token aus Header holen
+    token = request.headers.get("X-Search-Token")
+    
+    if not token or not search_token_manager.validate_token(token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Ungültiger oder abgelaufener Token"
+        )
+    
+    # Query validieren
+    if not q or len(q.strip()) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Suchbegriff muss mindestens 2 Zeichen haben"
+        )
+    
+    # Suche durchführen
+    search_term = f"%{q.strip().lower()}%"
+    result = await db.execute(
+        select(User)
+        .where(
+            User.is_active == True,
+            or_(
+                User.first_name.ilike(search_term),
+                User.last_name.ilike(search_term),
+                User.username.ilike(search_term)
+            )
+        )
+        .order_by(User.last_name, User.first_name)
+        .limit(10)
+    )
+    users = result.scalars().all()
+    
+    return [
+        UserSearchResult(
+            id=user.id,
+            username=user.username,
+            first_name=user.first_name,
+            last_name=user.last_name
+        )
+        for user in users
+    ]

@@ -25,11 +25,30 @@ export const LoginPage: React.FC = () => {
   const [filteredUsers, setFilteredUsers] = useState<UserSearchResult[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [searchToken, setSearchToken] = useState<string>('')
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Filter users based on search term
+  // Fetch search token on mount
   useEffect(() => {
-    if (searchTerm.length < 2) {
+    const fetchSearchToken = async () => {
+      try {
+        const response = await fetch('/api/v1/auth/search-token')
+        const data = await response.json()
+        setSearchToken(data.token)
+      } catch (error) {
+        console.error('Failed to fetch search token:', error)
+      }
+    }
+    fetchSearchToken()
+    
+    // Refresh token every 4 minutes (before it expires at 5 min)
+    const interval = setInterval(fetchSearchToken, 4 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Search users with token
+  useEffect(() => {
+    if (searchTerm.length < 2 || !searchToken) {
       setFilteredUsers([])
       setShowDropdown(false)
       return
@@ -37,12 +56,24 @@ export const LoginPage: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`/api/v1/auth/users/search?q=${encodeURIComponent(searchTerm)}`)
+        const response = await fetch(
+          `/api/v1/auth/users/search?q=${encodeURIComponent(searchTerm)}`,
+          {
+            headers: {
+              'X-Search-Token': searchToken,
+            }
+          }
+        )
+        
+        if (response.status === 401) {
+          // Token expired - fetch new one
+          const tokenResponse = await fetch('/api/v1/auth/search-token')
+          const tokenData = await tokenResponse.json()
+          setSearchToken(tokenData.token)
+          return
+        }
         
         if (!response.ok) {
-          if (response.status === 429) {
-            toast.error('Zu viele Anfragen. Bitte kurz warten.')
-          }
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         
@@ -57,10 +88,10 @@ export const LoginPage: React.FC = () => {
       }
     }
 
-    // Debounce: Warte 300ms nach letzter Eingabe
+    // Debounce: Wait 300ms after last input
     const timeoutId = setTimeout(fetchUsers, 300)
     return () => clearTimeout(timeoutId)
-  }, [searchTerm])
+  }, [searchTerm, searchToken])
 
   // Close dropdown when clicking outside
   useEffect(() => {
