@@ -200,8 +200,8 @@ export const DashboardPage: React.FC = () => {
                 <p className={`text-sm font-semibold ${
                   transaction.transaction_type === 'top_up' ||
                   (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0)
-                    ? 'text-success-600'
-                    : 'text-danger-600'
+                    ? 'text-green-600'
+                    : 'text-red-600'
                 }`}>
                   {(transaction.transaction_type === 'top_up' ||
                     (transaction.transaction_type === 'admin_adjustment' && transaction.amount > 0))

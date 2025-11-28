@@ -108,21 +108,26 @@ export const LoginPage: React.FC = () => {
         <Card className="relative backdrop-blur-2xl bg-white/95 shadow-2xl border border-white/20">
           {/* Header with Logo */}
           <div className="text-center mb-8">
-            <div className="inline-block mb-4">
-              <img 
-                src={bcColoursLogo}
-                alt="BC Colours Logo" 
-                className="w-32 h-32 object-contain drop-shadow-xl"
-              />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              BC Colours Kiosk
-            </h1>
-            <p className="text-gray-600">
-              Melde dich an, um fortzufahren
-            </p>
-          </div>
-
+  <div className="inline-block mb-4">
+    <img 
+      src={bcColoursLogo}
+      alt="BC Colours Logo" 
+      className="w-32 h-32 object-contain drop-shadow-xl"
+    />
+  </div>
+  <div className="flex justify-center mb-2">
+    <h1 className="text-3xl font-bold text-gray-900 relative group cursor-help">
+      Jeschrömt
+      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-4 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none shadow-xl z-50">
+        Düsseldorfer Platt für Verzehr auf Bierdeckeln angeschrieben 🍺
+        <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></span>
+      </span>
+    </h1>
+  </div>
+  <p className="text-gray-600">
+    Melde dich an, um fortzufahren
+  </p>
+</div>          
           {!rfidMode ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <Input
