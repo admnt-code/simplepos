@@ -31,3 +31,6 @@ dist-ssr
 backups/
 backup_*.sql
 *.tar.gz
+
+# Dockerfiles
+docker-compose*.yml
